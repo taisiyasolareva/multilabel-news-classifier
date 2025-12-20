@@ -48,15 +48,21 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'analyzer' not in st.session_state:
-    st.session_state.analyzer = None
-if 'results' not in st.session_state:
-    st.session_state.results = []
-if 'use_api' not in st.session_state:
-    st.session_state.use_api = False
-if 'api_url' not in st.session_state:
-    st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
+def _ensure_session_state() -> None:
+    """
+    Ensure required session state keys exist.
+
+    Important: in Streamlit multipage apps, imported modules may not re-run on every script rerun.
+    Initializing state only at import-time can lead to AttributeError on `st.session_state.<key>`.
+    """
+    if "analyzer" not in st.session_state:
+        st.session_state.analyzer = None
+    if "results" not in st.session_state:
+        st.session_state.results = []
+    if "use_api" not in st.session_state:
+        st.session_state.use_api = False
+    if "api_url" not in st.session_state:
+        st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
 
 
 def initialize_analyzer():
@@ -114,6 +120,7 @@ def get_sentiment_color(label: str) -> str:
 
 def main():
     """Main dashboard function."""
+    _ensure_session_state()
     # Header
     st.markdown('<h1 class="main-header">😊 Sentiment Analysis Dashboard</h1>', unsafe_allow_html=True)
     

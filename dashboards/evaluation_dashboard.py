@@ -54,13 +54,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'use_api' not in st.session_state:
-    st.session_state.use_api = False
-if 'api_url' not in st.session_state:
-    st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
-if 'evaluation_data' not in st.session_state:
-    st.session_state.evaluation_data = None
+def _ensure_session_state() -> None:
+    """
+    Ensure required session state keys exist.
+
+    Important: in Streamlit multipage apps, imported modules may not re-run on every script rerun.
+    Initializing state only at import-time can lead to AttributeError on `st.session_state.<key>`.
+    """
+    if "use_api" not in st.session_state:
+        st.session_state.use_api = False
+    if "api_url" not in st.session_state:
+        st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
+    if "evaluation_data" not in st.session_state:
+        st.session_state.evaluation_data = None
 
 
 def load_predictions_from_file(file_path: str) -> Optional[Dict]:
@@ -72,6 +78,7 @@ def load_predictions_from_file(file_path: str) -> Optional[Dict]:
 
 def main():
     """Main dashboard function."""
+    _ensure_session_state()
     # Header
     st.markdown('<h1 class="main-header">📊 Model Evaluation Dashboard</h1>', unsafe_allow_html=True)
     
