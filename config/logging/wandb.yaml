@@ -1,0 +1,17 @@
+# WandB Logging Configuration
+
+logging:
+  type: "wandb"  # Options: wandb, tensorboard, csv, none
+  
+  wandb:
+    project: ${project.name}
+    entity: null  # Your WandB username/team
+    name: null  # Auto-generated if null
+    tags: ${experiment.tags}
+    notes: ${experiment.notes}
+    log_model: "all"  # Options: "all", "best", false
+    save_code: true
+    resume: "allow"  # Options: "allow", "must", "never"
+    
+    # WandB API key should be set via environment variable: WANDB_API_KEY
+

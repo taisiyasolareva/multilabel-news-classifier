@@ -1,0 +1,9 @@
+# TensorBoard Logging Configuration
+
+logging:
+  type: "tensorboard"
+  
+  tensorboard:
+    log_dir: ${paths.log_dir}
+    comment: ""
+

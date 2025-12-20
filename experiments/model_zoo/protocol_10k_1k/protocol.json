@@ -1,0 +1,18 @@
+{
+  "data_path": "data/news_data/ria_news.tsv",
+  "data_sha256": "8d9082852bfb31e9e997052ee587741e79308ab6cd349f9923d5be3448b130d2",
+  "split": {
+    "train_date_end": "2018-10-01",
+    "val_date_start": "2018-10-01",
+    "val_date_end": "2018-12-01",
+    "test_date_start": "2018-12-01"
+  },
+  "limits": {
+    "max_train_samples": 10000,
+    "max_val_samples": 1000
+  },
+  "label_space": {
+    "min_tag_frequency": 30,
+    "num_labels": 141
+  }
+}

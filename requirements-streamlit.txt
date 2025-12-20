@@ -1,0 +1,17 @@
+# Streamlit demo requirements
+streamlit>=1.28.0
+plotly>=5.17.0
+requests>=2.31.0
+torch>=2.0.0
+transformers>=4.35.0
+numpy>=1.24.0
+pandas>=2.0.0
+statsmodels>=0.14.0  # Required for plotly trendline="ols"
+
+# Used by analytics modules (thread analysis, correlation, regression)
+scipy>=1.11.0
+scikit-learn>=1.3.0
+
+# Project dependencies for inference
+# Copy relevant dependencies from requirements.txt
+

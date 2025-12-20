@@ -1,0 +1,47 @@
+# Default Training Configuration
+
+training:
+  # Basic training settings
+  epochs: 5
+  batch_size: 16
+  val_batch_size: 32
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+  
+  # Optimizer settings
+  optimizer:
+    type: "adamw"  # Options: adam, adamw, sgd
+    learning_rate: 2e-5  # For transformers (use 1e-3 for simple models)
+    weight_decay: 0.01
+    betas: [0.9, 0.999]
+    eps: 1e-8
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "linear_warmup"  # Options: linear_warmup, cosine, step, none
+    warmup_steps: 500
+    num_training_steps: null  # Auto-calculated if null
+    
+  # Loss function
+  loss:
+    type: "bce_with_logits"  # Options: bce_with_logits, focal_loss, label_smoothing
+    label_smoothing: 0.0
+    focal_alpha: 0.25
+    focal_gamma: 2.0
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    monitor: "val_f1"  # Metric to monitor
+    mode: "max"  # "max" or "min"
+    patience: 3
+    min_delta: 0.001
+  
+  # Model checkpointing
+  checkpoint:
+    save_top_k: 3
+    monitor: "val_f1"
+    mode: "max"
+    save_last: true
+    every_n_epochs: 1
+

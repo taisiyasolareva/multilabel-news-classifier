@@ -1,0 +1,2 @@
+experiment_id,model_name,use_snippet,checkpoint_path,eval_csv,metrics_json
+rubert_base_v1,DeepPavlov/rubert-base-cased,True,/Users/tay/Development/portfolio projects/nlp/models/rubert_base_v1.pt,/Users/tay/Development/portfolio projects/nlp/experiments/model_zoo/rubert_base_v1_eval.csv,/Users/tay/Development/portfolio projects/nlp/experiments/results/rubert_base_v1.json

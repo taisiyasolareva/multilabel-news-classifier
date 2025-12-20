@@ -1,0 +1,17 @@
+models:
+  # Example entry. Fill these after you publish the repo and upload a Release asset (recommended).
+  #
+  # distilmbert_lora_10k_v1:
+  #   checkpoint_url: "https://github.com/<user>/<repo>/releases/download/<tag>/distilmbert_lora_10k_v1.pt"
+  #   checkpoint_sha256: "<optional sha256>"
+  #   tokenizer_name: "distilbert-base-multilingual-cased"
+  #   use_snippet: true
+  #   global_threshold: 0.15
+  distilmbert_lora_10k_v1:
+    checkpoint_url: ""
+    checkpoint_sha256: ""
+    tokenizer_name: "distilbert-base-multilingual-cased"
+    use_snippet: true
+    global_threshold: 0.15
+
+
