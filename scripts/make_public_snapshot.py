@@ -40,6 +40,7 @@ INCLUDE_DIRS = [
     "experiments",
     "models",  # python code only; weights excluded by patterns below
     "monitoring",  # python code only; prediction logs excluded by patterns below
+    "utils",
     "nginx",
     "pages",
     "scripts",
