@@ -8,7 +8,17 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       # Download model weights (recommended: GitHub Release asset URL)
-      python scripts/download_model.py --model-id distilmbert_lora_10k_v1
+      if [ -z "$MODEL_URL" ]; then
+        echo "ERROR: MODEL_URL is not set."
+        echo "Set MODEL_URL in Render -> Service -> Environment to the direct .pt Release asset URL."
+        echo "Example: https://github.com/<user>/<repo>/releases/download/<tag>/distilmbert_lora_10k_v1.pt"
+        exit 1
+      fi
+      python scripts/download_model.py \
+        --model-id distilmbert_lora_10k_v1 \
+        --url "$MODEL_URL" \
+        --output-path models/distilmbert_lora_10k_v1.pt \
+        ${MODEL_SHA256:+--sha256 "$MODEL_SHA256"}
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: MODEL_PATH
