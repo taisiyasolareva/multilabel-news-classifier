@@ -27,6 +27,39 @@ Open:
 - **API health** (shows loaded model + thresholds): `http://localhost:8000/health`
 - **Streamlit multipage app** (Evaluation + Analytics + Model Comparison + Sentiment): `http://localhost:8501`
 
+### Render-like local debug (fastest way to stop waiting 30+ min)
+
+Render free tier has **~512Mi RAM**. If your model checkpoint is ~500MB (float32), it will **OOM** on load.
+You can reproduce this locally with cached Docker layers:
+
+```bash
+# 1) Download the exact model file you plan to use on Render
+python scripts/download_model.py --model-id distilmbert_lora_10k_v1 \
+  --url "$MODEL_URL" --output-path models/distilmbert_lora_10k_v1.pt
+
+# 2) Run the API under a 512Mi memory cap (Render-like)
+./scripts/run_render_like_api.sh
+```
+
+If you already have something running on port 8000, override the host port:
+
+```bash
+HOST_PORT=8001 ./scripts/run_render_like_api.sh
+```
+
+If it OOMs, you have two practical options:
+- **Use a bigger Render plan** (recommended if you want float32 transformers).
+- **Upload a smaller checkpoint** (fp16 inference checkpoint):
+
+```bash
+python scripts/convert_checkpoint_fp16.py \
+  --input models/distilmbert_lora_10k_v1.pt \
+  --output models/distilmbert_lora_10k_v1_fp16.pt
+```
+
+Then upload `models/distilmbert_lora_10k_v1_fp16.pt` as a GitHub Release asset and point Render `MODEL_URL` to it.
+Set `MODEL_DTYPE=float16` in Render env.
+
 ### Hosted Demo (Option B) — API + Streamlit (links)
 
 When you deploy, paste the final URLs here:

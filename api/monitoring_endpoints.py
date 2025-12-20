@@ -1,6 +1,7 @@
 """Monitoring endpoints for FastAPI."""
 
 from typing import Dict, Optional
+from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 

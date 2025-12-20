@@ -113,3 +113,18 @@ coverage.xml
 .dmypy.json
 dmypy.json
 
+# Deployment strategy docs (local reference only)
+RAILWAY_DEPLOY.md
+RAILWAY_QUICK_START.md
+RAILWAY_SETUP.md
+RENDER_DEPLOY_STRATEGY.md
+
+# Release process docs (internal)
+PUBLIC_RELEASE_README.md
+
+# Large experiment data files (keep only small curated samples)
+# Note: dashboard_eval_predictions.csv and *_eval_predictions.csv already excluded above
+experiments/model_zoo/*.csv
+experiments/model_zoo_summary.csv
+experiments/analytics_sentiment_counts.csv
+

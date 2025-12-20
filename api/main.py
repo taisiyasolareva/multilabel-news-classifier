@@ -531,10 +531,28 @@ async def startup_event():
     async def _load_resources_background() -> None:
         """Load model (and later potentially other heavy resources) without blocking server startup."""
         try:
+            # If model file doesn't exist but MODEL_URL is set, download it first (Railway/Render)
+            if not model_path_p.exists():
+                model_url = os.environ.get("MODEL_URL")
+                if model_url:
+                    logger.info(f"Model file not found, downloading from {model_url}")
+                    from scripts.download_model import download as download_model_func
+                    model_sha256 = os.environ.get("MODEL_SHA256")
+                    download_model_func(
+                        url=model_url,
+                        output_path=model_path_p,
+                        expected_sha256=model_sha256,
+                        force=False
+                    )
+                    logger.info(f"Model downloaded to {model_path_p}")
+                else:
+                    logger.warning(f"Model file not found: {model_path_p} and MODEL_URL not set. API will not work until model is loaded.")
+                    return
+            
             if model_path_p.exists():
                 await load_model(str(model_path_p))
             else:
-                logger.warning(f"Model file not found: {model_path_p}. API will not work until model is loaded.")
+                logger.warning(f"Model file still not found after download attempt: {model_path_p}")
         except Exception as e:
             # Keep the process alive; health will show model_not_loaded.
             logger.exception(f"Background model load failed: {e}")
