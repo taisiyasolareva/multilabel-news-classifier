@@ -1,22 +1,13 @@
-"""Model architectures for news classification."""
+"""Model architectures for news classification.
 
-from .simple_classifier import SimpleClassifier
-from .cnn_classifier import CNNClassifier
-from .transformer_model import RussianNewsClassifier, MultilingualBERTClassifier
-from .advanced_transformers import (
-    RoBERTaNewsClassifier,
-    DistilBERTNewsClassifier,
-    MultiHeadAttentionClassifier,
-    EnsembleClassifier,
-)
-from .ensemble import (
-    WeightedEnsemble,
-    StackingEnsemble,
-    VotingEnsemble,
-    create_ensemble,
-)
-from .lightning_module import NewsClassificationModule
-from .transformer_lightning import TransformerClassificationModule
+Important: keep this package lightweight at import time.
+Render/Uvicorn must import `api.main:app` before binding the port; importing the
+training stack (pytorch-lightning/torchmetrics/matplotlib) here can delay startup
+and cause Render port-scan timeouts.
+"""
+
+from importlib import import_module
+from typing import Any
 
 __all__ = [
     "SimpleClassifier",
@@ -31,7 +22,34 @@ __all__ = [
     "StackingEnsemble",
     "VotingEnsemble",
     "create_ensemble",
+    # training-only (kept for convenience, but lazily imported)
     "NewsClassificationModule",
     "TransformerClassificationModule",
 ]
+
+_LAZY: dict[str, tuple[str, str]] = {
+    "SimpleClassifier": ("models.simple_classifier", "SimpleClassifier"),
+    "CNNClassifier": ("models.cnn_classifier", "CNNClassifier"),
+    "RussianNewsClassifier": ("models.transformer_model", "RussianNewsClassifier"),
+    "MultilingualBERTClassifier": ("models.transformer_model", "MultilingualBERTClassifier"),
+    "RoBERTaNewsClassifier": ("models.advanced_transformers", "RoBERTaNewsClassifier"),
+    "DistilBERTNewsClassifier": ("models.advanced_transformers", "DistilBERTNewsClassifier"),
+    "MultiHeadAttentionClassifier": ("models.advanced_transformers", "MultiHeadAttentionClassifier"),
+    "EnsembleClassifier": ("models.advanced_transformers", "EnsembleClassifier"),
+    "WeightedEnsemble": ("models.ensemble", "WeightedEnsemble"),
+    "StackingEnsemble": ("models.ensemble", "StackingEnsemble"),
+    "VotingEnsemble": ("models.ensemble", "VotingEnsemble"),
+    "create_ensemble": ("models.ensemble", "create_ensemble"),
+    # training-only
+    "NewsClassificationModule": ("models.lightning_module", "NewsClassificationModule"),
+    "TransformerClassificationModule": ("models.transformer_lightning", "TransformerClassificationModule"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name not in _LAZY:
+        raise AttributeError(f"module 'models' has no attribute {name!r}")
+    module_name, attr_name = _LAZY[name]
+    mod = import_module(module_name)
+    return getattr(mod, attr_name)
 
