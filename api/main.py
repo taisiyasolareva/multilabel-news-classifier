@@ -490,10 +490,20 @@ async def startup_event():
         if not model_path_p.exists():
             model_path_p = _resolve_path("models/best_model.pt")
     
-    if model_path_p.exists():
-        await load_model(str(model_path_p))
-    else:
-        logger.warning(f"Model file not found: {model_path_p}. API will not work until model is loaded.")
+    async def _load_resources_background() -> None:
+        """Load model (and later potentially other heavy resources) without blocking server startup."""
+        try:
+            if model_path_p.exists():
+                await load_model(str(model_path_p))
+            else:
+                logger.warning(f"Model file not found: {model_path_p}. API will not work until model is loaded.")
+        except Exception as e:
+            # Keep the process alive; health will show model_not_loaded.
+            logger.exception(f"Background model load failed: {e}")
+
+    # IMPORTANT (Render): don't block server startup on large model/tokenizer load.
+    # Render performs a port scan shortly after starting the process; heavy startup work can time out.
+    asyncio.create_task(_load_resources_background())
 
     # Resolve thresholds path: env var wins, else config/thresholds.json (if present)
     thresholds_env = os.environ.get("THRESHOLDS_PATH")
