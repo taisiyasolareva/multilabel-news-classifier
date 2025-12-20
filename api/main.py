@@ -11,6 +11,8 @@ import logging
 import asyncio
 import json
 import hashlib
+import inspect
+import gc
 import os
 from typing import List, Optional, Dict, Any, Tuple
 from pathlib import Path
@@ -88,6 +90,15 @@ model_loaded = False
 model_path = None  # Track loaded model path for versioning
 threshold_config = None  # Custom thresholds from config file
 thresholds_path = None  # Track thresholds path for debugging/versioning
+
+# Model dtype (can help memory on small instances if you provide an fp16 checkpoint)
+def _get_model_dtype() -> torch.dtype:
+    raw = os.environ.get("MODEL_DTYPE", "float32").strip().lower()
+    if raw in {"float16", "fp16", "half"}:
+        return torch.float16
+    if raw in {"bfloat16", "bf16"}:
+        return torch.bfloat16
+    return torch.float32
 
 # Monitoring components (initialized at import time so middleware can be added before startup)
 prediction_logger = PredictionLogger(log_dir="monitoring/predictions")
@@ -275,7 +286,19 @@ async def load_model(
         logger.info(f"Loading model from {model_path}")
 
         # Load model checkpoint first (so we can infer tokenizer/model name from metadata).
-        checkpoint = torch.load(model_path, map_location=device)
+        load_kwargs: dict[str, Any] = {"map_location": "cpu"}
+        # Reduce peak RSS for large checkpoints if supported by the installed torch.
+        # (Render free tier is 512Mi; mmap can help avoid transient double-buffering.)
+        try:
+            sig = inspect.signature(torch.load)
+            if "mmap" in sig.parameters:
+                load_kwargs["mmap"] = True
+            # NOTE: we intentionally do NOT force weights_only=True here because
+            # some checkpoints store small metadata dicts; weights_only can reject them.
+        except Exception:
+            pass
+
+        checkpoint = torch.load(model_path, **load_kwargs)
 
         # Infer tokenizer name from checkpoint if not provided.
         inferred_name = None
@@ -296,12 +319,27 @@ async def load_model(
                 num_labels = checkpoint.get('num_labels', 1000)
                 use_snippet = checkpoint.get('use_snippet', False)  # Default to False for title-only
                 tag_to_idx = checkpoint.get('tag_to_idx', None)  # Load tag mapping if available
+                model_dtype = _get_model_dtype()
                 model = RussianNewsClassifier(
                     model_name=tokenizer_name_eff,
                     num_labels=num_labels,
                     use_snippet=use_snippet,
+                    # Crucial for low-memory deployments: don't load backbone weights
+                    # from HuggingFace before applying the checkpoint.
+                    load_pretrained_backbone=False,
                 )
-                model.load_state_dict(checkpoint['state_dict'])
+                # Move model to target dtype/device before loading weights (best effort).
+                # If you upload an fp16 checkpoint and set MODEL_DTYPE=float16, this
+                # significantly reduces RAM usage.
+                model = model.to(device=device, dtype=model_dtype)
+
+                state_dict = checkpoint['state_dict']
+                # Drop the big checkpoint dict ASAP to reduce peak memory.
+                checkpoint = None
+                gc.collect()
+                model.load_state_dict(state_dict)
+                state_dict = None
+                gc.collect()
             else:
                 model = checkpoint
         else:

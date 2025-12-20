@@ -1,0 +1,36 @@
+#
+# Render / API-only dependencies
+#
+# Goal: keep the web service lean (faster builds, less RAM, fewer side-effects).
+# Streamlit + training/experiment tooling stays in requirements.txt / requirements-streamlit.txt.
+#
+
+# Force CPU-only PyTorch wheels (avoid pulling CUDA runtime deps on Render).
+# Render currently uses Python 3.13 (cp313), so we target a torch version with cp313 wheels.
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
+torch==2.9.1
+
+# Inference stack
+transformers>=4.30.0
+tokenizers>=0.15.0
+safetensors>=0.4.0
+
+# API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+
+# Core numeric deps (used by analytics/monitoring endpoints)
+numpy>=1.24.0
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# Config / utilities
+pyyaml>=6.0
+omegaconf>=2.3.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+

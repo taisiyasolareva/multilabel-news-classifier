@@ -30,6 +30,7 @@ class RussianNewsClassifier(nn.Module):
         dropout: float = 0.3,
         use_snippet: bool = True,
         freeze_bert: bool = False,
+        load_pretrained_backbone: bool = True,
     ):
         """
         Initialize transformer-based classifier.
@@ -43,6 +44,9 @@ class RussianNewsClassifier(nn.Module):
             dropout: Dropout probability for classification head
             use_snippet: Whether to use snippet in addition to title
             freeze_bert: If True, freeze BERT weights (only train classifier)
+            load_pretrained_backbone: If True, initialize the transformer backbone
+                with `from_pretrained()` weights. If False, initialize from config only
+                (no weights) and expect a checkpoint/state_dict to be loaded later.
             
         Example:
             >>> model = RussianNewsClassifier(
@@ -56,11 +60,17 @@ class RussianNewsClassifier(nn.Module):
         self.num_labels = num_labels
         self.use_snippet = use_snippet
         self.freeze_bert = freeze_bert
+        self.load_pretrained_backbone = load_pretrained_backbone
         
         # Load pre-trained BERT
         logger.info(f"Loading model: {model_name}")
         config = AutoConfig.from_pretrained(model_name)
-        self.bert = AutoModel.from_pretrained(model_name, config=config)
+        if load_pretrained_backbone:
+            self.bert = AutoModel.from_pretrained(model_name, config=config)
+        else:
+            # Important for low-memory deployments (e.g., Render free tier):
+            # avoid loading the full backbone weights twice (once from hub, once from checkpoint).
+            self.bert = AutoModel.from_config(config)
         
         hidden_size = config.hidden_size
         

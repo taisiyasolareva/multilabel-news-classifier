@@ -6,7 +6,8 @@ services:
     region: oregon
     healthCheckPath: /health
     buildCommand: |
-      pip install -r requirements.txt
+      # Install a lean, API-only dependency set (faster builds + lower RAM).
+      pip install -r requirements-api.txt
       # Download model weights (recommended: GitHub Release asset URL)
       if [ -z "$MODEL_URL" ]; then
         echo "ERROR: MODEL_URL is not set."
@@ -21,6 +22,11 @@ services:
         ${MODEL_SHA256:+--sha256 "$MODEL_SHA256"}
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      # Ensure Python can import local top-level packages (api/, models/, utils/, etc.)
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: PYTHONUNBUFFERED
+        value: "1"
       - key: MODEL_PATH
         value: models/distilmbert_lora_10k_v1.pt
       - key: THRESHOLDS_PATH
@@ -31,5 +37,6 @@ services:
       # - MODEL_URL: direct URL to .pt file (e.g., GitHub Release asset)
       # - MODEL_SHA256: optional integrity check
       # - CORS_ALLOW_ORIGINS: comma-separated list of allowed origins for Streamlit Cloud
+      # - MODEL_DTYPE: optional (float32|float16). Use float16 with an fp16 checkpoint to fit into 512Mi.
 
 
