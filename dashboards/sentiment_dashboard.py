@@ -60,9 +60,17 @@ def _ensure_session_state() -> None:
     if "results" not in st.session_state:
         st.session_state.results = []
     if "use_api" not in st.session_state:
-        st.session_state.use_api = False
-    if "api_url" not in st.session_state:
-        st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
+        st.session_state.use_api = True
+
+    # Prefer Streamlit secrets (Streamlit Cloud), then env vars (Docker/local), then localhost.
+    try:
+        secret_api_url = st.secrets.get("API_URL")  # type: ignore[attr-defined]
+    except Exception:
+        secret_api_url = None
+    desired_api_url = secret_api_url or os.environ.get("API_URL") or "http://localhost:8000"
+
+    if "api_url" not in st.session_state or st.session_state.api_url == "http://localhost:8000":
+        st.session_state.api_url = desired_api_url
 
 
 def initialize_analyzer():

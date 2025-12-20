@@ -61,10 +61,19 @@ def _ensure_session_state() -> None:
     Important: in Streamlit multipage apps, imported modules may not re-run on every script rerun.
     Initializing state only at import-time can lead to AttributeError on `st.session_state.<key>`.
     """
+    # Default to API usage in the hosted demo; user can toggle it off in the UI.
     if "use_api" not in st.session_state:
-        st.session_state.use_api = False
-    if "api_url" not in st.session_state:
-        st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
+        st.session_state.use_api = True
+
+    # Prefer Streamlit secrets (Streamlit Cloud), then env vars (Docker/local), then localhost.
+    try:
+        secret_api_url = st.secrets.get("API_URL")  # type: ignore[attr-defined]
+    except Exception:
+        secret_api_url = None
+    desired_api_url = secret_api_url or os.environ.get("API_URL") or "http://localhost:8000"
+
+    if "api_url" not in st.session_state or st.session_state.api_url == "http://localhost:8000":
+        st.session_state.api_url = desired_api_url
     if "evaluation_data" not in st.session_state:
         st.session_state.evaluation_data = None
 

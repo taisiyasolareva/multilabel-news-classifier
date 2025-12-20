@@ -21,9 +21,17 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Streamlit Community Cloud stores secrets in `st.secrets` (not necessarily env vars).
+def _get_api_url_default() -> str:
+    try:
+        secret_val = st.secrets.get("API_URL")  # type: ignore[attr-defined]
+    except Exception:
+        secret_val = None
+    return secret_val or os.environ.get("API_URL") or "http://localhost:8000"
+
 # Shared defaults across pages
 if "api_url" not in st.session_state:
-    st.session_state.api_url = os.environ.get("API_URL", "http://localhost:8000")
+    st.session_state.api_url = _get_api_url_default()
 if "use_api" not in st.session_state:
     st.session_state.use_api = True
 
