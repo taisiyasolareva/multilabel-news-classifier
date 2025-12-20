@@ -1,0 +1,101 @@
+
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: news-classifier-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount only the required artifacts (avoid overriding code inside the image)
+      - ./models/distilmbert_lora_10k_v1.pt:/app/models/distilmbert_lora_10k_v1.pt:ro
+      - ./config/thresholds.json:/app/config/thresholds.json:ro
+      # Persist monitoring logs across restarts (optional but nice for demos)
+      - ./monitoring:/app/monitoring
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PATH=models/distilmbert_lora_10k_v1.pt
+      - THRESHOLDS_PATH=config/thresholds.json
+      - TOKENIZER_NAME=distilbert-base-multilingual-cased
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - nlp-network
+
+  # Streamlit (multipage app)
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: news-classifier-streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - API_URL=http://api:8000
+    command: >
+      streamlit run streamlit_app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+    depends_on:
+      - api
+    networks:
+      - nlp-network
+
+  # Optional: MLflow tracking server
+  mlflow:
+    image: python:3.10-slim
+    container_name: mlflow-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlruns
+      - ./requirements.txt:/requirements.txt
+    working_dir: /app
+    command: >
+      sh -c "pip install mlflow && 
+             mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri file:///mlruns"
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=file:///mlruns
+    networks:
+      - nlp-network
+    profiles:
+      - tracking
+
+  # Optional: Jupyter notebook for development
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: jupyter-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/app
+      - jupyter-data:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: >
+      sh -c "pip install jupyter jupyterlab && 
+             jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token=''"
+    networks:
+      - nlp-network
+    profiles:
+      - dev
+
+networks:
+  nlp-network:
+    driver: bridge
+
+volumes:
+  jupyter-data:

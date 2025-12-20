@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: russian-news-classification-api
+    runtime: python
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    buildCommand: |
+      pip install -r requirements.txt
+      # Download model weights (recommended: GitHub Release asset URL)
+      python scripts/download_model.py --model-id distilmbert_lora_10k_v1
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MODEL_PATH
+        value: models/distilmbert_lora_10k_v1.pt
+      - key: THRESHOLDS_PATH
+        value: config/thresholds.json
+      - key: TOKENIZER_NAME
+        value: distilbert-base-multilingual-cased
+      # Set these in the Render dashboard (do not hardcode secrets here):
+      # - MODEL_URL: direct URL to .pt file (e.g., GitHub Release asset)
+      # - MODEL_SHA256: optional integrity check
+      # - CORS_ALLOW_ORIGINS: comma-separated list of allowed origins for Streamlit Cloud
+
+

@@ -1,0 +1,22 @@
+# Transformer Model Configuration
+
+model:
+  type: "transformer"
+  architecture: "russian_bert"  # Options: russian_bert, multilingual_bert, roberta, distilbert, multihead_attention
+  
+  # Model-specific settings
+  transformer:
+    model_name: "DeepPavlov/rubert-base-cased"  # Russian BERT
+    # Alternatives:
+    # - "bert-base-multilingual-cased" (Multilingual BERT)
+    # - "xlm-roberta-base" (RoBERTa)
+    # - "distilbert-base-multilingual-cased" (DistilBERT)
+    
+    num_labels: null  # Will be set from data
+    dropout: 0.3
+    freeze_backbone: false
+    use_snippet: true
+    
+    # Multi-head attention settings (if architecture is multihead_attention)
+    num_attention_heads: 8
+

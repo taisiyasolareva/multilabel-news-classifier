@@ -1,0 +1,40 @@
+# Dockerfile for Streamlit demo
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-streamlit.txt requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files (for standalone container usage).
+# Note: In docker-compose we also mount the repo as a volume for the dashboards.
+COPY streamlit_app.py .
+COPY dashboards/ dashboards/
+COPY evaluation/ evaluation/
+COPY analysis/ analysis/
+COPY api/ api/
+COPY utils/ utils/
+COPY config/ config/
+COPY experiments/ experiments/
+
+# Expose Streamlit port
+EXPOSE 8501
+
+# Health check
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+# Run Streamlit
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+
+
+

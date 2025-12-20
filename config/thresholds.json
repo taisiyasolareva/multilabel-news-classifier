@@ -1,0 +1,7 @@
+{
+  "global_threshold": 0.15,
+  "per_class_thresholds": {},
+  "model_version": "distilmbert_lora_10k_v1",
+  "description": "Threshold configuration for model predictions. Set global_threshold for all classes, or use per_class_thresholds for class-specific thresholds. Per-class thresholds override global threshold.",
+  "usage": "Load this file in api/main.py to use custom thresholds. If per_class_thresholds is empty, global_threshold is used for all classes."
+}

@@ -1,0 +1,115 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Model files
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pb
+models/*.pt
+models/*.pth
+checkpoints/
+*.onnx
+
+# Data files
+data/raw/
+data/processed/
+data/**/*.csv
+data/**/*.tsv
+data/**/*.parquet
+*.h5
+*.hdf5
+
+# Keep tiny sample data (safe to commit)
+!data/tiny_*.csv
+
+# Experiment artifacts (often large) - keep small curated samples instead
+experiments/dashboard_eval_predictions.csv
+experiments/*_eval_predictions.csv
+experiments/predictions/*.csv
+
+# Always keep curated sample outputs
+!experiments/sample_outputs/**
+
+# Monitoring logs/artifacts
+monitoring/predictions/
+
+# Logs and outputs
+logs/
+outputs/
+wandb/
+tensorboard_logs/
+*.log
+
+# Hydra outputs
+outputs/
+multirun/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+

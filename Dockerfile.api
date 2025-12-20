@@ -1,0 +1,37 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# System deps: curl for healthchecks, build-essential for any compiled wheels
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python deps
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Make local packages importable as top-level modules (api/, models/, utils/, etc.)
+ENV PYTHONPATH=/app
+
+# Copy code with directory structure intact (required for `uvicorn api.main:app`)
+COPY api/ api/
+COPY utils/ utils/
+COPY analysis/ analysis/
+COPY monitoring/ monitoring/
+COPY models/ models/
+COPY config/ config/
+
+# Ensure monitoring output directory exists (so API can write logs in containers)
+RUN mkdir -p monitoring/predictions
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+

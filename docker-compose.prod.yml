@@ -1,0 +1,63 @@
+version: '3.8'
+
+# Production docker-compose configuration
+# Usage: docker-compose -f docker-compose.prod.yml up
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: news-classifier-api-prod
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount only models directory (read-only)
+      - ./models:/app/models:ro
+      # Mount config (read-only)
+      - ./config:/app/config:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PATH=/app/models/best_model.pt
+      - TOKENIZER_NAME=DeepPavlov/rubert-base-cased
+      - WORKERS=4
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    networks:
+      - nlp-network
+
+  # Nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+    restart: always
+    networks:
+      - nlp-network
+    profiles:
+      - nginx
+
+networks:
+  nlp-network:
+    driver: bridge

@@ -1,0 +1,48 @@
+# Main Configuration File for Russian News Classification
+# Use Hydra for config management: python train.py --config-name=config
+
+defaults:
+  - _self_
+  - model: transformer
+  - training: default
+  - data: default
+  - logging: wandb
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+# Project metadata
+project:
+  name: "russian-news-classification"
+  version: "1.0.0"
+  description: "Multi-label news tag classification using transformers"
+
+# Experiment tracking
+experiment:
+  name: null  # Auto-generated if null
+  tags: []
+  notes: ""
+
+# Random seed for reproducibility
+seed: 42
+
+# Device configuration
+device:
+  type: "auto"  # "auto", "cpu", "cuda", "mps"
+  accelerator: "auto"  # "auto", "cpu", "gpu", "tpu"
+  mixed_precision: false  # Use mixed precision training
+
+# Output directories
+paths:
+  data_dir: "data/"
+  model_dir: "models/"
+  checkpoint_dir: "checkpoints/"
+  log_dir: "logs/"
+  output_dir: "outputs/"
+
+# Hydra output configuration
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: outputs/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

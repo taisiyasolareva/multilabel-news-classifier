@@ -1,0 +1,22 @@
+# Simple/CNN Model Configuration
+
+model:
+  type: "simple"  # Options: simple, cnn
+  
+  # Simple classifier settings
+  simple:
+    vocab_size: 10000  # Will be overridden by data processing
+    embedding_dim: 300
+    use_snippet: false
+    
+  # CNN classifier settings
+  cnn:
+    vocab_size: 10000
+    embedding_dim: 300
+    conv_channels: [128, 256]
+    kernel_sizes: [3, 3]
+    pool_size: 2
+    hidden_dim: 600
+    dropout: 0.3
+    use_snippet: true
+

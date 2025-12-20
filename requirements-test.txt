@@ -1,0 +1,9 @@
+# Testing dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+pytest-timeout>=2.1.0
+
+# Add to main requirements.txt or install separately:
+# pip install -r requirements-test.txt
+
