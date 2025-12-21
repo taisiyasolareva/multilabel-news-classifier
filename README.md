@@ -1,3 +1,14 @@
+---
+title: News Classification API
+emoji: 📰
+colorFrom: blue
+colorTo: purple
+sdk: docker
+sdk_version: "3.0.0"
+app_file: app.py
+pinned: false
+---
+
 # Russian News Tagging (Multi-label) — API + Model Zoo + Dashboards
 
 A multi-label classification system for Russian news articles, built around transformer backbones and a reproducible **model zoo** protocol (fixed 10k train / 1k val split) for fair comparisons.
