@@ -41,7 +41,7 @@ RUN mkdir -p monitoring/predictions
 # Expose default port (Spaces uses 7860, but PORT env var is set dynamically)
 EXPOSE 7860
 
-# Spaces will run: python app.py
-# The app.py file handles PORT env var automatically
-CMD ["python", "app.py"]
+# Run uvicorn directly, referencing app from app.py
+# HuggingFace Spaces sets PORT env var automatically (use shell form to expand env var)
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
 
