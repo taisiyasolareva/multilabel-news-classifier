@@ -1,28 +1,22 @@
----
-title: News Classification API
-emoji: 📰
-colorFrom: blue
-colorTo: purple
-sdk: docker
-sdk_version: "3.0.0"
-app_file: app.py
-pinned: false
----
+# Multilabel News Classifier — API + Model Zoo
 
-# multilabel-news-classifier
+**Rigorous evaluation protocol · DistilBERT LoRA · FastAPI serving · data drift detection · Docker + CI**
 
-**Multi-label news classification for Russian articles.** Transformer backbones (DistilBERT, RuBERT) + LoRA fine-tuning + reproducible model zoo protocol + FastAPI + Streamlit dashboards. 141 labels (snippet-aware).
+Production multi-label tag classification for Russian news (141 labels, snippet-aware). Reproducible model zoo, threshold optimization, and live deployment.
 
-**Proof points:** Opt F1 **0.4518** (DistilBERT + LoRA, 10k train / 1k val) · threshold 0.15 · deployed on HuggingFace Spaces (API) + Streamlit Cloud (UI).
+- **Model zoo:** frozen 10k/1k protocol, threshold optimization, best-model policy — [RESULTS.md](docs/RESULTS.md)
+- **Deployed:** HF Spaces API (fp16) + Streamlit dashboards — [DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- **Monitoring:** prediction logging, drift detection, performance tracking — [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **CI:** compile check + pytest — [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
-**CTAs:** [Live Demo](https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier) · [Portfolio Blurb](docs/PORTFOLIO_BLURB.md) · [Results](docs/RESULTS.md) · [Architecture](docs/ARCHITECTURE.md) · [Demo Walkthrough](docs/DEMO.md)
+**[Live Demo](https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier)** · **[API Docs](https://solarevat-multilabel-news-classifier.hf.space/docs)** · **[Results & Protocol](docs/RESULTS.md)**
 
-## Live Deployment
+## Live deployment
 
-- **Streamlit Classifier (UI)**: https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier
-- **API base**: https://solarevat-multilabel-news-classifier.hf.space
-  - **API docs**: https://solarevat-multilabel-news-classifier.hf.space/docs
-  - **Health**: https://solarevat-multilabel-news-classifier.hf.space/health
+- **Streamlit Classifier**: https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier
+- **HF Spaces API base**: `https://solarevat-multilabel-news-classifier.hf.space`
+  - API docs: `https://solarevat-multilabel-news-classifier.hf.space/docs`
+  - Health: `https://solarevat-multilabel-news-classifier.hf.space/health`
 - **Served model**: distilmbert_lora_10k_v1 (threshold 0.15)
 
 ## Results at a glance
