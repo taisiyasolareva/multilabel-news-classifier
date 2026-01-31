@@ -27,7 +27,7 @@ if "api_url" not in st.session_state:
 with st.sidebar:
     st.header("API")
     st.session_state.api_url = st.text_input("API_URL", value=st.session_state.api_url)
-    st.markdown("Tip: in Streamlit Cloud, set `API_URL` in **Secrets** to your Render API base URL.")
+    st.markdown("Tip: in Streamlit Cloud, set `API_URL` in **Secrets** to your API base URL (e.g. HuggingFace Spaces).")
 
 col1, col2 = st.columns([2, 1])
 
@@ -89,6 +89,10 @@ if run:
                     st.write(f"**{tag}** — {score:.3f}")
             else:
                 st.info("No predictions above threshold.")
+
+
+
+
 
 
 

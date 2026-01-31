@@ -1,6 +1,6 @@
 {
   "experiment_id": "rubert_snippet_ablation_v1",
-  "checkpoint_path": "/Users/tay/Development/portfolio projects/nlp/models/rubert_snippet_ablation_v1.pt",
+  "checkpoint_path": "models/rubert_snippet_ablation_v1.pt",
   "data_path": "data/news_data/ria_news.tsv",
   "protocol_dir": "experiments/model_zoo/protocol",
   "protocol": {

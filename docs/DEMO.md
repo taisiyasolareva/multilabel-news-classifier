@@ -1,6 +1,6 @@
-# Demo Walkthrough (Reviewers)
+# Demo Walkthrough
 
-This is a copy/paste guide for trying the project without training anything.
+Copy/paste guide for trying the project without training.
 
 ---
 
@@ -11,18 +11,40 @@ docker compose up --build
 ```
 
 Then open:
-- API docs: `http://localhost:8000/docs`
-- API health: `http://localhost:8000/health`
-- Evaluation dashboard: `http://localhost:8501`
-- Analytics dashboard: `http://localhost:8502`
-- Model comparison dashboard: `http://localhost:8503`
-- Sentiment dashboard: `http://localhost:8504`
+- **API docs**: http://localhost:8000/docs
+- **API health**: http://localhost:8000/health
+- **Streamlit multipage app**: http://localhost:8501 (Classifier, Evaluation, Analytics, Model Comparison, Sentiment in sidebar)
+
+**Note:** Docker Compose expects `models/distilmbert_lora_10k_v1.pt`. If missing, run:
+```bash
+python scripts/download_model.py --model-id distilmbert_lora_10k_v1 \
+  --url "$MODEL_URL" --output-path models/distilmbert_lora_10k_v1.pt
+```
+**MODEL_URL:** Get the direct asset URL from the repo's GitHub Releases (see [docs/DEPLOYMENT.md](DEPLOYMENT.md)).
+
+---
+
+## Option B: Local (no Docker)
+
+**Terminal 1 — API:**
+```bash
+export MODEL_PATH=models/distilmbert_lora_10k_v1.pt
+export THRESHOLDS_PATH=config/thresholds.json
+python scripts/start_api.py --reload
+```
+
+**Terminal 2 — Streamlit:**
+```bash
+streamlit run streamlit_app.py
+```
+
+Open http://localhost:8501 and set `API_URL` to `http://localhost:8000` in the sidebar.
 
 ---
 
 ## Try the API (copy/paste)
 
-### Classify (title only)
+### Classify (text only)
 
 ```bash
 curl -X POST "http://localhost:8000/classify" \
@@ -47,31 +69,11 @@ curl -X POST "http://localhost:8000/classify" \
 
 ---
 
-## Use the dashboards with existing artifacts (no training)
+## Dashboards with existing artifacts (no training)
 
 ### Evaluation dashboard
-- Upload a **small sample predictions CSV** (recommended for reviewers):
-  - `experiments/sample_outputs/distilmbert_lora_10k_v1_val_preds_sample_50.csv`
+Upload a sample predictions CSV:
+- `experiments/sample_outputs/distilmbert_lora_10k_v1_val_preds_sample_50.csv`
 
 ### Model comparison dashboard
-- Uses the experiment results JSONs in `experiments/results/` (already in repo).
-
----
-
-## Option B: Local (no Docker)
-
-In one terminal:
-
-```bash
-export MODEL_PATH="models/distilmbert_lora_10k_v1.pt"
-export THRESHOLDS_PATH="config/thresholds.json"
-python scripts/start_api.py --reload
-```
-
-In another terminal:
-
-```bash
-streamlit run dashboards/model_comparison_dashboard.py
-```
-
-
+Reads experiment results from `experiments/results/` (already in repo).

@@ -123,6 +123,9 @@ HF_SPACES_QUICK_START.md
 # Release process docs (internal)
 PUBLIC_RELEASE_README.md
 
+# Archive (internal/optional files — kept locally, not for public surface)
+archive/
+
 # Large experiment data files (keep only small curated samples)
 # Note: dashboard_eval_predictions.csv and *_eval_predictions.csv already excluded above
 experiments/model_zoo/*.csv

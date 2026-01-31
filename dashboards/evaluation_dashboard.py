@@ -79,9 +79,8 @@ def _ensure_session_state() -> None:
 
 
 def load_predictions_from_file(file_path: str) -> Optional[Dict]:
-    """Load predictions from file (placeholder for actual implementation)."""
-    # This would load actual predictions from a saved file
-    # For now, return None to indicate manual input needed
+    """Load predictions from CSV (e.g. experiments/sample_outputs/*.csv). Returns None if not implemented; use file upload in UI."""
+    # TODO: implement CSV load for experiments/sample_outputs format
     return None
 
 

@@ -1,5 +1,7 @@
 # Architecture Documentation
 
+**Live demo:** [Streamlit Classifier](https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier)
+
 ## System Architecture
 
 ### High-Level Overview
@@ -101,7 +103,7 @@ Input Text: "Путин объявил о новых мерах поддержк
     ├─► Sigmoid Activation
     │   └─► Probabilities: [batch, num_labels]
     │
-    └─► Threshold Filtering (0.5)
+    └─► Threshold Filtering (configurable; served model uses 0.15)
         └─► Final Tags: ["политика", "экономика"]
 ```
 
@@ -264,7 +266,7 @@ HTTP Request
 ### MLOps
 - **WandB**: Experiment tracking
 - **MLflow**: Model registry
-- **DVC**: Data versioning
+- **DVC** (optional): Data versioning — not used in current pipeline
 - **Optuna**: Hyperparameter tuning
 - **Hydra**: Configuration management
 

@@ -1,10 +1,13 @@
 # Results Summary (Model Zoo)
 
+**Live demo:** [Streamlit Classifier](https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier)
+
 This repo uses a frozen comparison protocol for fair experiments:
 
 - Protocol: `experiments/model_zoo/protocol_10k_1k` (10k train / 1k val)
-- Evaluation output: `experiments/results/<model_id>.json` + `experiments/predictions/<model_id>_val_preds.csv`
+- Evaluation output: `experiments/results/<model_id>.json`; predictions CSV via `scripts/evaluate.py --output-csv`. Sample: `experiments/sample_outputs/`
 - Threshold optimization: stored inside each results JSON and mirrored in `config/thresholds.json` for the served model.
+- **Best-model policy**: Highest opt F1 on validation selects the served model; `config/thresholds.json` holds its version and threshold.
 
 ---
 

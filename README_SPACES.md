@@ -38,6 +38,7 @@ This repository is configured for deployment on HuggingFace Spaces.
 
 Once deployed, your API will be available at:
 
+- **Streamlit Classifier app:** https://multilabel-news-classifier-flqhorz4ntfkpmtn3jwdvy.streamlit.app/Classifier
 - **Health Check:** `GET /health`
 - **API Docs:** `GET /docs`
 - **Classify:** `POST /classify`
@@ -77,4 +78,8 @@ python app.py
 ```
 
 Then visit `http://localhost:8000/docs` to test the API.
+
+
+
+
 
